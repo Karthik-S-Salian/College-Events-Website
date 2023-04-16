@@ -1,0 +1,55 @@
+#event-editor{
+    width:80%;
+    margin: auto;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    
+}
+
+#event-editor form{
+    display: flex;
+    flex-direction: column;
+    row-gap: 40px;
+}
+
+#event-editor label{
+    display: block;
+    padding-bottom: .8rem;
+    font-weight: 700;
+}
+
+#event-editor input{
+    width: 100%;
+    padding: 1rem;
+    transition: all .15s ease-in-out;
+}
+
+#event-editor input:hover{
+    transform: scale(1.01);
+}
+
+#event-editor .button-container{
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+    gap: 10px;
+}
+
+#event-editor button{
+    width: 100%;
+    text-align: center;
+    text-transform: uppercase;
+    background: none;
+    background-color: rgb(110, 110, 110);
+    color: #f7f7f7;
+    letter-spacing: 140%;
+    font-weight: 600;
+    height: 40px;
+    border: 1px rgb(228, 228, 228);
+    border-radius: 5px;
+}
+
+#event-editor input[type=textarea]{
+    min-height: 200px;
+}
+
