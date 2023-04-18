@@ -5,7 +5,7 @@ import twitterIcon from "../../icons/icons8-twitter-24.png";
 
 function Footer(){
     return (
-        <footer>
+        <footer id="footer">
             <h2>About Us</h2>
             <section>Lorem ipsum dolor sit amet. Qui iure expedita est quam dolorum ut 
                 accusamus adipisci aut sunt necessitatibus. Ut accusamus distinctio 

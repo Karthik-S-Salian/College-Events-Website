@@ -1,4 +1,3 @@
-import './App.css';
 import Login from "./Components/Login/Login.js"
 import Home from "./Components/Home/Page.js"
 import EventEditor from "./Components/Event/Editor"

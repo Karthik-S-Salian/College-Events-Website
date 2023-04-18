@@ -35,7 +35,7 @@
     gap: 10px;
 }
 
-#event-editor button{
+#event-editor .button-container>button{
     width: 100%;
     text-align: center;
     text-transform: uppercase;
@@ -49,7 +49,33 @@
     border-radius: 5px;
 }
 
-#event-editor input[type=textarea]{
-    min-height: 200px;
+#description{
+    width: 100%;
 }
 
+#preview{
+    border: 1px solid black;
+    min-height: 30px;
+}
+
+#event h1{
+    text-align: center;
+    text-transform: capitalize;
+}
+
+.rich-text-editor{
+    width: 100%;
+    border: 1px solid black;
+}
+
+#backButton{
+    text-align: center;
+    text-transform: uppercase;
+    background: none;
+    background-color: rgb(46, 46, 46);
+    color: #f7f7f7;
+    font-weight: 600;
+    margin-bottom: 5%;
+    padding: 1rem;
+    border-radius: 5px;
+}

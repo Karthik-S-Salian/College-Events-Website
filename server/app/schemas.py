@@ -38,14 +38,19 @@ class ResponseUser(BaseModel):
     id:int
     name:str
     email:str
+    is_admin:bool
 
     class Config:
         orm_mode = True
 
 class EventCardResponse(BaseModel):
+    id:int
     title: str
-    poster:Optional[str]
+    poster:str
     timings:datetime
+
+    class Config:
+        orm_mode = True
 
 
 
@@ -55,3 +60,9 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     id : Optional[str]=None
+
+
+class LoginResponse(ResponseUser,Token):
+    pass
+
+    

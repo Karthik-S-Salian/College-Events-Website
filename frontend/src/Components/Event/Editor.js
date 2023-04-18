@@ -1,43 +1,29 @@
 import { useState } from 'react';
 import Header from '../Home/Header';
 import "./style.css"
+import ReactQuill from 'react-quill';
+import parse from 'html-react-parser';
 
 function EventEditor(){
 
-    const [poster,setPoster]=useState();
+    const [poster,setPoster]=useState("");
+    const [description,setDescription]=useState("");
+    const [publish,setPublish]=useState(false)
 
-    const [eventData,setEventData]=useState({
+    const eventData={
         title:"",
-        description:"",
-        poster:"",
         registration_link:"",
         location:"",
         timings:"",
-        publish:false
-    })
+    }
 
-    async function postFinalForm() {
-        /*
-        ;
-        ;
-        const formdata=new FormData()
-        Object.entries(eventData).forEach((key,value)=>{formdata.append(key,value)});
-
-        const response = await fetch('http://127.0.0.1:8000/events/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'multipart/form-data',
-                'accept': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-            },
-            body: formdata
-        });
-
-        const data2 = await response.json();
-        console.log(data2);
-        */
+    async function postFinalForm(fileName) {
         const formDataAsArray = Object.entries(eventData);
+        formDataAsArray.push(["poster",fileName]);
+        formDataAsArray.push(["description",description]);
+        formDataAsArray.push(["publish",publish]);
         const formDataAsUrlEncoded = new URLSearchParams(formDataAsArray).toString()
+
         const response = await fetch(`http://127.0.0.1:8000/events/?${formDataAsUrlEncoded}`, {
             method: 'POST',
             headers: {
@@ -46,8 +32,8 @@ function EventEditor(){
             },
         });
 
-        const data2 = await response.json();
-        console.log(data2);
+        const data = await response.json();
+        console.log(data);
     }
 
     async function postPoster(){
@@ -56,32 +42,22 @@ function EventEditor(){
         const response = await fetch('http://127.0.0.1:8000/images', {
             method: 'POST',
             body: formData,
-            headers: {
-                //'Content-Type': 'multipart/form-data',
-                /*'Authorization': `Bearer ${localStorage.getItem('access_token')}`*/
-            }
         });
 
         const data = await response.json();
-        console.log(data);
-        setEventData(prevsData=>{return {...prevsData,"poster":data.filename}})
+        return data.filename
     }
 
 
     async function handleSubmit(event){
         event.preventDefault();
-        await postPoster();
-        await postFinalForm();
+        const fileName=await postPoster();
+        await postFinalForm(fileName);
     }
 
     function handleChange(event){
         const {name,value}=event.target;
-        setEventData(prevsData=>{
-            return {
-                ...prevsData,
-                [name]:value
-            }
-        });
+        eventData[name]=value;
     }
 
 
@@ -121,12 +97,16 @@ function EventEditor(){
                 </div>
 
                 <div>
-                    <label htmlFor="description">Description</label>
-                        <input 
-                            type="textarea"
-                            onChange={handleChange}
-                            name="description"
-                        />
+                    <label htmlFor="description"  id='description-container'>Description</label>
+                        <div id='description'>
+                        <ReactQuill value={description} onChange={setDescription} className='rich-text-editor' />
+                        </div> 
+                </div>
+
+                <div>
+                    <label htmlFor="Preview">Preview</label>
+                        <div name="Preview" id="preview"
+                        >{parse(description)}</div>
                 </div>
 
                 <div>
@@ -156,8 +136,12 @@ function EventEditor(){
                 </div>
                 
                 <div className='button-container'> 
-                    <button onClick={() => setEventData(prevsData=>{return {...prevsData,"publish":false}})}>Save Draft</button>
-                    <button onClick={() => setEventData(prevsData=>{return {...prevsData,"publish":true}})}>Save</button>
+                    {(!publish)&&(
+                        <>
+                            <button onClick={() => setPublish(false)}>Save Draft</button>
+                            <button onClick={() => setPublish(true)}>Save</button>
+                        </>
+                    )}
                 </div>
             </form>
         </section>

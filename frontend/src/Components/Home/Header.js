@@ -1,14 +1,21 @@
 //import airbnbLogo from '../../images/airbnb-logo.png';
 import logo from '../../icons/png/logo-no-background.png';
+import { Link } from 'react-router-dom';
 
 function Header(){
+
+    function logout(){
+        localStorage.setItem('access_token', null);
+    }
+
     return (
+
         <header>
             <img src={logo}  id="logo" alt="airbnb logo"/>
             <nav className="header__link">
-                <a href="http://" className="nav-link">Home</a>
-                <a href="http://" className="nav-link">Contact Us</a>
-                <a href="http://" className="nav-link">About</a>
+            <Link to="/"><span className="nav-link">Home</span></Link>
+                <a href="#footer" className="nav-link">About Us</a>
+            <Link to="/login"><button id="logout-button" onClick={logout}>logout</button></Link>
             </nav>
         </header>
     );

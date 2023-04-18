@@ -85,7 +85,7 @@ function Login(){
                 <form onSubmit={handleSubmit}>
 
                     {!isLogin && (<div>
-                        <label for="name">Name</label>
+                        <label htmlFor="name">Name</label>
                         <input type="text"
                         onChange={handleChange}
                         name="name"
