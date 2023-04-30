@@ -10,7 +10,6 @@ router=APIRouter(prefix="/images",tags=["Images"])
 
 @router.get("/{filename}",status_code=status.HTTP_200_OK)
 def get_image(filename:UUID):
-    #path=(Path(__file__)/f"../../data/images/{filename}").absolute()
     path=next((Path(__file__)/f"../../data/images/").glob(f"{filename}.*"))
 
     if path.exists():

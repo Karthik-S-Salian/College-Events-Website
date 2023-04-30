@@ -4,8 +4,9 @@ import { createSearchParams,Link } from "react-router-dom"
 
 function EventCard(props){
     const [imageSourceUrl, setImageSourceUrl] = useState(null);
+
     useEffect(()=>{
-        fetch(`http://127.0.0.1:8000/images/${props.item.poster}`)
+        fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/images/${props.item.poster}`)
             .then(response => {return response.blob()})
             .then(blob=>{
                 setImageSourceUrl(URL.createObjectURL(blob));})
@@ -16,7 +17,9 @@ function EventCard(props){
             search: `?${createSearchParams({
                 id:props.item.id,
             })}`
-          }}>
+          }}
+          state={{ isAdmin: props.isAdmin }}
+          >
             <div className="card-container">
                 
                 {imageSourceUrl&&<img className="card-img" src={imageSourceUrl} alt="airbnb logo"/>}

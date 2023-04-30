@@ -7,12 +7,13 @@ from sqlalchemy.orm import relationship
 
 
 class Events(Base):
-    __tablename__="posts"
+    __tablename__="events"
     id =Column(Integer,primary_key=True)
     title=Column(String,nullable=False)
     description=Column(String)
     poster=Column(String)
     location=Column(String)
+    location_link=Column(String)
     registration_link=Column(String)
     publish=Column(Boolean,server_default="0",nullable=False)
     created_at=Column(TIMESTAMP(timezone=True),nullable=False,server_default=text('CURRENT_TIMESTAMP'))

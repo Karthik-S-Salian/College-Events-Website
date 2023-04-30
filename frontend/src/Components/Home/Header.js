@@ -11,7 +11,7 @@ function Header(){
     return (
 
         <header>
-            <img src={logo}  id="logo" alt="airbnb logo"/>
+            <img src={logo}  id="logo" alt="event buddy logo"/>
             <nav className="header__link">
             <Link to="/"><span className="nav-link">Home</span></Link>
                 <a href="#footer" className="nav-link">About Us</a>

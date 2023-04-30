@@ -23,58 +23,49 @@ function Login(){
         });
     }
 
+    async function submitToServer(){
+        if(isLogin)
+            return await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `username=${encodeURIComponent(credentials.email)}&password=${encodeURIComponent(credentials.password)}&grant_type=`,
+                })
+                .then(response =>  {
+                    if (response.ok) {
+                        return response.json();
+                    }
+                    return Promise.reject(response);
+                })
+        else
+            return await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/login/signin`, {
+                method: 'POST',
+                headers: {  'Content-Type': 'application/json' },
+                body: JSON.stringify(credentials),
+                })
+    }
+
+    async function verify(){
+        try{
+            const response = await submitToServer();
+            if (response.ok) {
+                const data = await response.json();
+                localStorage.setItem('access_token', data.access_token);
+                navigate("/")
+            }
+            Promise.reject(response)
+
+        }catch(error){
+            setCredentials({})
+            if(error.status===403)
+                alert("INVALID CREDENTIALS")  
+            else
+                navigate("/network-error")
+        }
+    }
+
     function handleSubmit(event){
         event.preventDefault();
-        
-        if (isLogin){
-            fetch('http://127.0.0.1:8000/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: `username=${encodeURIComponent(credentials.email)}&password=${encodeURIComponent(credentials.password)}&grant_type=`,
-            })
-            .then(response =>  {
-                if (response.ok) {
-                    return response.json();
-                }
-                return Promise.reject(response);
-            })
-            .then(
-                data => {
-                    console.log(data);
-                    localStorage.setItem('access_token', data.access_token);
-                    navigate("/")
-                }
-            )
-            .catch(error => {
-                console.error(error)
-                alert("INVALID CREDENTIALS")
-            });
-        }else{
-            console.log(JSON.stringify(credentials));
-            fetch('http://127.0.0.1:8000/login/signin', {
-            method: 'POST',
-            headers: {  'Content-Type': 'application/json' },
-            body: JSON.stringify(credentials),
-            })
-            .then(response =>  {
-                if (response.ok) {
-                    return response.json();
-                }
-                return Promise.reject(response);
-            })
-            .then(
-                data => {
-                    console.log(data);
-                    localStorage.setItem('access_token', data.access_token);
-                    navigate("/")
-                }
-            )
-            .catch(error => {
-                console.error(error)
-                alert("INVALID CREDENTIALS")
-            });
-            }
-        
+        verify();
     }
 
     return (
@@ -126,6 +117,7 @@ function Login(){
                     
                     
                 </form>
+
                 <div className="sign-up-container">
                     {isLogin?(
                         <>
@@ -140,9 +132,7 @@ function Login(){
                     )}
                     
                 </div>
-                
             </div>
-        
     </div>
     )
 }

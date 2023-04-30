@@ -10,7 +10,7 @@ function Events(props){
     useEffect(()=>{
 
         async function fetchData(){
-            await fetch('http://127.0.0.1:8000/events/', {
+            await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/events/`, {
             method: 'GET',
             headers: { 
                 'Content-Type': 'application/json', 
@@ -34,6 +34,7 @@ function Events(props){
         return <EventCard 
             key={item.id}
             item={item}
+            isAdmin={props.isAdmin}
             />
     })
 
@@ -42,7 +43,7 @@ function Events(props){
     return (
         <section className='cards-container'>
                 {card_collection}
-                {props.is_admin&&<Link to="/event-editor">
+                {props.isAdmin&&<Link to="/event-editor">
                     <div className="card-container" id="add-new">
                         <div>
                             <span>add</span>

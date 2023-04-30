@@ -17,7 +17,7 @@ def get_all_events(db: Session = Depends(get_db),current_user:schemas.ResponseUs
     return events
 
 
-@router.get("/{id}",response_model=schemas.Event)
+@router.get("/{id}",response_model=schemas.ResponseEvent)
 def get_event(id:int,db: Session = Depends(get_db),current_user:schemas.ResponseUser=Depends(oauth2.get_current_user)):
     event=db.query(models.Events).filter(models.Events.id==id).first()
     if not event:
@@ -26,16 +26,13 @@ def get_event(id:int,db: Session = Depends(get_db),current_user:schemas.Response
 
     return event
 
-
-@router.post("/",status_code=status.HTTP_201_CREATED,response_model=schemas.Event)
-async def create_event(event:schemas.RequestEvent = Depends(),db: Session = Depends(get_db),current_user:schemas.ResponseUser=Depends(oauth2.get_current_user)):
+@router.post("/",status_code=status.HTTP_201_CREATED,response_model=schemas.ResponseEvent)
+async def create_event(event:schemas.RequestEvent,db: Session = Depends(get_db),current_user:schemas.ResponseUser=Depends(oauth2.get_current_user)):
     event_data=event.dict()
     path=next((Path(__file__)/f"../../data/images/").glob(f"{event_data['poster']}.*"))
 
     if path is None:
         HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="poster not found")
-
-    print(current_user)
 
     event_data['poster']=str(event_data['poster'])
     new_event=models.Events(user_id=current_user.id,**event_data)
@@ -44,6 +41,44 @@ async def create_event(event:schemas.RequestEvent = Depends(),db: Session = Depe
     db.refresh(new_event)
     return new_event
 
+
+@router.delete("/{id}",status_code=status.HTTP_204_NO_CONTENT)
+def delete_post(id:int,db: Session = Depends(get_db),current_user:schemas.ResponseUser=Depends(oauth2.get_current_user)):
+    event_query=db.query(models.Events).filter(models.Events.id==id)
+    if event_query.first()==None:
+       raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"post with id = {id} doesnot exit")
+    if not current_user.is_admin:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"not authorized to perform this action")
+    event_query.delete(synchronize_session=False)
+    db.commit()
+    return
+
+
+@router.put("/{id}",response_model=schemas.ResponseEvent)
+def update_post_put(id:int,changed_event:schemas.RequestEvent,db: Session = Depends(get_db),current_user:schemas.ResponseUser=Depends(oauth2.get_current_user)):
+    event_query=db.query(models.Events).filter(models.Events.id==id)
+    event=event_query.first()
+    if not event:
+       raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"post with id = {id} doesnot exit")
+            
+    if not current_user.is_admin:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"not authorized to perform this action")
+
+    event_data=changed_event.dict()
+    path=next((Path(__file__)/f"../../data/images/").glob(f"{event_data['poster']}.*"))
+
+    if path is None:
+        HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="poster not found")
+    event_data['poster']=str(event_data['poster'])
+
+    event_query.update(event_data,synchronize_session=False)
+    db.commit()
+    db.refresh(event)
+    return event
 
 
 

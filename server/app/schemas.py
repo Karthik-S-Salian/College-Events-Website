@@ -2,14 +2,15 @@ from pydantic import BaseModel, HttpUrl,EmailStr,validator
 from uuid import UUID
 from typing import Optional
 from datetime import datetime
-from fastapi import Form,UploadFile,File
+#from fastapi import Form,UploadFile,File
 
 
-class Event(BaseModel):
+class BaseEvent(BaseModel):
     title: str
     description: Optional[str]
     poster:Optional[str]
-    location : Optional[HttpUrl]
+    location : Optional[str]
+    location_link:Optional[HttpUrl]
     registration_link:Optional[HttpUrl]
     timings:Optional[datetime]
     publish:bool
@@ -18,15 +19,23 @@ class Event(BaseModel):
         orm_mode = True
 
 
-class RequestEvent(BaseModel):
-    title: str=Form(...)
-    description: Optional[str]=Form(None)
+#class RequestEvent(BaseModel):
+    #title: str=Form(...)
+    #description: Optional[str]=Form(None)
     #poster:UploadFile=File()
-    poster: UUID=Form(...)
-    location : Optional[HttpUrl]=Form(None)
-    registration_link:Optional[HttpUrl]=Form(None)
-    timings:Optional[datetime]=Form(None)
-    publish:bool=Form(...)
+    #poster: UUID=Form(...)
+    #location : Optional[HttpUrl]=Form(None)
+    #registration_link:Optional[HttpUrl]=Form(None)
+    #timings:Optional[datetime]=Form(None)
+    #publish:bool=Form(...)
+
+class RequestEvent(BaseEvent):
+    pass
+
+
+class ResponseEvent(BaseEvent):
+    id:int
+    
 
 
 class CreateUser(BaseModel):
@@ -47,7 +56,7 @@ class EventCardResponse(BaseModel):
     id:int
     title: str
     poster:str
-    timings:datetime
+    timings:Optional[datetime]
 
     class Config:
         orm_mode = True

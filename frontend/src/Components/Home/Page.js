@@ -9,12 +9,13 @@ import { useNavigate } from "react-router-dom";
 function Page(){
     const navigate = useNavigate();
     const [userData,setUserData]=useState("")
+    
 
     useEffect(()=>{
         
         const token=localStorage.getItem("access_token");
         if(token){
-            fetch('http://127.0.0.1:8000/login/verify', {
+            fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/login/verify`, {
             method: 'GET',
             headers: { 
                 'Content-Type': 'application/json', 
@@ -34,15 +35,17 @@ function Page(){
                     setUserData(data);
                 }
             )
-            .catch(error => {console.error("error",error)
+            .catch(error => {
             if (error.status===401)
                 navigate("/login")
+            else
+                navigate("/network-error")
             });
         }
         else{
             navigate("/login")
         }   
-    },[])
+    },[navigate])
 
     
 
@@ -51,7 +54,7 @@ function Page(){
             <Header/>
             <Hero/>
             <Events 
-            is_admin={userData.is_admin}
+            isAdmin={userData.is_admin}
             />
             <Footer/>
         </div>
