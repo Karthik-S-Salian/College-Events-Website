@@ -8,7 +8,7 @@ from datetime import datetime
 class BaseEvent(BaseModel):
     title: str
     description: Optional[str]
-    poster:Optional[str]
+    poster:UUID
     location : Optional[str]
     location_link:Optional[HttpUrl]
     registration_link:Optional[HttpUrl]
@@ -36,8 +36,6 @@ class RequestEvent(BaseEvent):
 class ResponseEvent(BaseEvent):
     id:int
     
-
-
 class CreateUser(BaseModel):
     name:str
     email:EmailStr

@@ -29,10 +29,10 @@ def get_event(id:int,db: Session = Depends(get_db),current_user:schemas.Response
 @router.post("/",status_code=status.HTTP_201_CREATED,response_model=schemas.ResponseEvent)
 async def create_event(event:schemas.RequestEvent,db: Session = Depends(get_db),current_user:schemas.ResponseUser=Depends(oauth2.get_current_user)):
     event_data=event.dict()
-    path=next((Path(__file__)/f"../../data/images/").glob(f"{event_data['poster']}.*"))
-
-    if path is None:
-        HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="poster not found")
+    try:
+        next((Path(__file__)/f"../../data/images/").glob(f"{event_data['poster']}.*"))
+    except StopIteration:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="poster not found")
 
     event_data['poster']=str(event_data['poster'])
     new_event=models.Events(user_id=current_user.id,**event_data)
@@ -69,11 +69,11 @@ def update_post_put(id:int,changed_event:schemas.RequestEvent,db: Session = Depe
                 detail=f"not authorized to perform this action")
 
     event_data=changed_event.dict()
-    path=next((Path(__file__)/f"../../data/images/").glob(f"{event_data['poster']}.*"))
+    try:
+        next((Path(__file__)/f"../../data/images/").glob(f"{event_data['poster']}.*"))
+    except StopIteration:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="poster not found")
 
-    if path is None:
-        HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="poster not found")
-    event_data['poster']=str(event_data['poster'])
 
     event_query.update(event_data,synchronize_session=False)
     db.commit()

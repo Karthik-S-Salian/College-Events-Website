@@ -30,12 +30,6 @@ function Login(){
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: `username=${encodeURIComponent(credentials.email)}&password=${encodeURIComponent(credentials.password)}&grant_type=`,
                 })
-                .then(response =>  {
-                    if (response.ok) {
-                        return response.json();
-                    }
-                    return Promise.reject(response);
-                })
         else
             return await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/login/signin`, {
                 method: 'POST',
@@ -47,15 +41,17 @@ function Login(){
     async function verify(){
         try{
             const response = await submitToServer();
+            const data = await response.json();
             if (response.ok) {
-                const data = await response.json();
+                
                 localStorage.setItem('access_token', data.access_token);
                 navigate("/")
-            }
-            Promise.reject(response)
+            }else
+                Promise.reject(response);
 
         }catch(error){
             setCredentials({})
+            console.error(error)
             if(error.status===403)
                 alert("INVALID CREDENTIALS")  
             else
