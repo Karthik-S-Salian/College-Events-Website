@@ -1,5 +1,5 @@
 import "./style.css"
-import { useSearchParams,useLocation, useNavigate} from "react-router-dom";
+import { useSearchParams, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import parse from 'html-react-parser';
 import Header from '../Home/Header';
@@ -10,10 +10,19 @@ import locationImage from "../../icons/location.png"
 function Event() {
     const [searchParams,] = useSearchParams();
     const isAdmin = useLocation().state.isAdmin;
-    console.log(isAdmin)
     const id = searchParams.get("id")
     const [eventData, setEventData] = useState({});
     const navigate = useNavigate();
+
+
+    const options = {
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric', //just ommit which not needed
+        hour12: true
+    };
 
     useEffect(() => {
 
@@ -88,7 +97,9 @@ function Event() {
                     navigate("/")
             });
 
+
     }
+    console.log(eventData)
 
     return (
         <>
@@ -104,25 +115,25 @@ function Event() {
 
 
                 <section id="quick-links-container">
-                    {eventData.timings && <span><strong>timmings : </strong> {eventData.timings}</span>}
-                    {(eventData.location || eventData.location_link) &&(
-                        <span> 
+                    {eventData.timings && <span><strong>timings : </strong>{new Intl.DateTimeFormat('en-US', options).format(new Date(eventData.timings))}</span>}
+                    {(eventData.location || eventData.location_link) && (
+                        <span className="location-container">
                             <img src={locationImage} className="loaction-icon" alt="location" />
-                            <a href={eventData.location}>{eventData.location_link?eventData.location:"Click here to view in map"}</a>
+                            <a href={eventData.location_link} rel="noreferrer" target="_blank">{eventData.location ? eventData.location : "Click here to view in map"}</a>
                         </span>)}
-                    {eventData.registration_link &&  <span><strong>registration link : </strong>  <a href={eventData.registration_link}>Click here to join</a></span>}
+                    {eventData.registration_link && <span><strong>registration link : </strong>  <a href={eventData.registration_link}>Click here to join</a></span>}
                 </section>
 
                 <section>
-                    {eventData.description?parse(eventData.description):null}
+                    {eventData.description ? parse(eventData.description) : null}
                 </section>
 
             </div>
-            
-                <section id="edit-event-buttons-container">
-                    <button onClick={()=>navigate(`/event-editor?id=${id}`)}>EDIT</button>
-                    <button onClick={handleDelete}>DELETE</button>
-                </section>
+
+            {isAdmin && (<section id="edit-event-buttons-container">
+                <button onClick={() => navigate(`/event-editor?id=${id}`)}>EDIT</button>
+                <button onClick={handleDelete}>DELETE</button>
+            </section>)}
 
             <Footer />
         </>

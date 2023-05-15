@@ -5,6 +5,7 @@ from datetime import datetime
 #from fastapi import Form,UploadFile,File
 
 
+
 class BaseEvent(BaseModel):
     title: str
     description: Optional[str]
@@ -30,7 +31,8 @@ class BaseEvent(BaseModel):
     #publish:bool=Form(...)
 
 class RequestEvent(BaseEvent):
-    pass
+    latitude:Optional[float]
+    longitude:Optional[float]
 
 
 class ResponseEvent(BaseEvent):

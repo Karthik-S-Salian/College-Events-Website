@@ -2,6 +2,8 @@ import "./style.css"
 import { useState } from 'react';
 //import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Login(){
     const [isLogin,setIsLogin]=useState(true);
@@ -46,16 +48,15 @@ function Login(){
                 
                 localStorage.setItem('access_token', data.access_token);
                 navigate("/")
-            }else
+            }else{
                 Promise.reject(response);
+                if(response.status===403 || response.status===422)
+                toast.error('Invalid credentials'); 
+            }
 
         }catch(error){
             setCredentials({})
-            console.error(error)
-            if(error.status===403)
-                alert("INVALID CREDENTIALS")  
-            else
-                navigate("/network-error")
+            navigate("/network-error")
         }
     }
 
@@ -73,9 +74,11 @@ function Login(){
 
                     {!isLogin && (<div>
                         <label htmlFor="name">Name</label>
-                        <input type="text"
+                        <input 
+                        type="text"
                         onChange={handleChange}
                         name="name"
+                        required
                         />   
                     </div>)}
 
@@ -86,14 +89,17 @@ function Login(){
                         placeholder="example@mail.com"
                         onChange={handleChange}
                         name="email"
+                        required
                         />   
                     </div>
 
                     <div>
-                        <label htmlFor="password">Password</label>
-                        <input type="password"
+                        <label htmlFor="password" >Password</label>
+                        <input 
+                        type="password"
                         onChange={handleChange}
                         name="password"
+                        required
                         /> 
                     </div>
                     <div className="extra-options-container">

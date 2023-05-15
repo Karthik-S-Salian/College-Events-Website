@@ -109,7 +109,7 @@ nav{
     line-height: 28px;
     letter-spacing: 2px;
     word-spacing: 5px;
-    max-width: 500px;
+    max-width: 80%;
 
 
 }
@@ -227,7 +227,7 @@ footer{
     text-align: center;
     margin-top: 8%;
     background-color: rgb(46, 46, 46);
-    height:330px;
+    min-height:330px;
     font-weight: 600;
     color: white;
     padding: 2%;

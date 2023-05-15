@@ -4,6 +4,15 @@ import "./style.css"
 import ReactQuill from 'react-quill';
 import parse from 'html-react-parser';
 import { useSearchParams,useNavigate} from "react-router-dom";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+      
+
+function isValidUrl(url) {
+    // Regular expression for URL validation
+    const urlRegex = new RegExp(/^(http|https):\/\/[^ "]+$/);
+    return urlRegex.test(url);
+  }
 
 function EventEditor() {
     const navigate=useNavigate();
@@ -13,13 +22,13 @@ function EventEditor() {
     const [eventData, setEventData] = useState({
         id:searchParams.get("id"),
         title: "",
-        registration_link: "",
+        registration_link: undefined,
         description: "",
-        location: "",
-        location_link:"",
-        timings: "",
+        location: undefined,
+        location_link:undefined,
+        timings: undefined,
         publish: false,
-        poster:null
+        poster:undefined
     })
 
     useEffect(() => {
@@ -55,6 +64,24 @@ function EventEditor() {
 
 
     async function postFinalForm(fileName,publish) {
+        let latitude,longitude;
+
+        if(eventData.location_link){
+            const regex = /@(-?\d+\.\d+),(-?\d+\.\d+)/;
+            const match = eventData.location_link.match(regex);
+            if (match && (match.length>1)){
+                latitude=match[1]
+                longitude=match[2]
+                if (!(latitude&&longitude)){
+                    toast.error("location link is not a valid url");
+                    return;
+                }
+            }else{
+                toast.error("location link is not a valid url");
+                return;
+        }
+
+        }
 
         const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/events/${eventData.id?eventData.id:""}`, {
             method: eventData.id?"PUT":"POST",
@@ -67,6 +94,8 @@ function EventEditor() {
                 ...eventData,
                 "publish": publish,
                 "poster":fileName,
+                "latitude":latitude,
+                "longitude":longitude
             })
         });
 
@@ -86,8 +115,39 @@ function EventEditor() {
         return data.filename;
     }
 
+    function isValidUrl(){
+        if (!eventData.title){
+            toast.error("Title is required");
+            return false;
+        }
+
+        if (!image){
+            toast.error("Poster is required");
+            return false;
+        }
+
+        if (eventData.registration_link)
+            if (!isValidUrl(eventData.registration_link)){
+                toast.error("registration link is not a valid url");
+                return false;
+            }
+
+        if (eventData.location_link){
+            
+            if (!RegExp(/^https:\/\/www.google.com\/maps\/place\/.*/).test(eventData.location_link)){
+                toast.error("location link is not a valid url");
+                return false;
+            }
+        }
+        return true;
+    }
+
 
     async function handleSubmit(publish) {
+
+        if (!isValidUrl())
+            return;
+
         let fileName=eventData.poster;
         if(isPosterChanged)
             fileName = await postPoster();

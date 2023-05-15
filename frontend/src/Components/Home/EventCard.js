@@ -3,6 +3,17 @@ import { useState,useEffect} from 'react';
 import { createSearchParams,Link } from "react-router-dom"
 
 function EventCard(props){
+
+
+    const options = { 
+        year: 'numeric', 
+        month: 'numeric', 
+        day: 'numeric', 
+        hour: 'numeric', 
+        minute: 'numeric', //just ommit which not needed
+        hour12: true 
+      };
+
     const [imageSourceUrl, setImageSourceUrl] = useState(null);
 
     useEffect(()=>{
@@ -24,7 +35,7 @@ function EventCard(props){
                 
                 {imageSourceUrl&&<img className="card-img" src={imageSourceUrl} alt="airbnb logo"/>}
                 <div className="card-description">
-                    <p>{props.item.timings}</p>
+                    <p>{new Intl.DateTimeFormat('en-US', options).format(new Date(props.item.timings))}</p>
                     <p>{props.item.title}</p>
                 </div>
             </div>

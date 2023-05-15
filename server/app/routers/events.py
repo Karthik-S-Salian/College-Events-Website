@@ -1,4 +1,4 @@
-from fastapi import Response,status,HTTPException,Depends,APIRouter, File, UploadFile,Form
+from fastapi import Response,status,HTTPException,Depends,APIRouter, File, UploadFile,Form,Header
 from .. import schemas,oauth2,models
 from ..database import get_db
 from sqlalchemy.orm import Session
@@ -7,14 +7,24 @@ from uuid import uuid4
 from uuid import UUID
 from pathlib import Path
 from fastapi.responses import FileResponse
+from sqlalchemy import func
+from math import sqrt, pow
 
 router=APIRouter(prefix="/events",tags=["Events"])
 
 
 @router.get("/",response_model=List[schemas.EventCardResponse])
-def get_all_events(db: Session = Depends(get_db),current_user:schemas.ResponseUser=Depends(oauth2.get_current_user)):
-    events=db.query(models.Events).all()
+def get_all_events(latitude=Header(),longitude=Header(),db: Session = Depends(get_db),current_user:schemas.ResponseUser=Depends(oauth2.get_current_user)):
+    if(latitude and longitude):
+        events=db.query(
+            models.Events,
+            func.sqrt(func.pow((models.Events.latitude - latitude), 2) + func.pow((models.Events.longitude - longitude), 2)).label('distance')
+            ).order_by('distance').all()
+        events=[event[0] for event in events]
+    else: 
+        events=db.query(models.Events).all()
     return events
+    
 
 
 @router.get("/{id}",response_model=schemas.ResponseEvent)
